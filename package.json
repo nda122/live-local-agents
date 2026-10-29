@@ -1,0 +1,15 @@
+{
+  "name": "live-agent",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Local multimodal assistant with supervised browser actions",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "format": "prettier --write web tests/*.cjs browser-worker.cjs",
+    "format:check": "prettier --check web tests/*.cjs browser-worker.cjs",
+    "test:ui": "node --experimental-vm-modules tests/test_devices.cjs",
+    "test:browser": "node tests/test_worker.cjs"
+  },
+  "dependencies": { "playwright": "1.59.1" },
+  "devDependencies": { "prettier": "3.6.2" }
+}

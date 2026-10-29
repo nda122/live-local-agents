@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta name="live-agent-token" content="__SESSION_TOKEN__" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LFM3 · Live session</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <defs>
+        <symbol id="i-mic" viewBox="0 0 24 24">
+          <rect x="9" y="3" width="6" height="12" rx="3" />
+          <path d="M5 11v1a7 7 0 0014 0v-1M12 19v3m-4 0h8" />
+        </symbol>
+        <symbol id="i-camera" viewBox="0 0 24 24">
+          <rect x="3" y="6" width="12" height="12" rx="3" />
+          <path d="m15 10 6-3v10l-6-3" />
+        </symbol>
+        <symbol id="i-screen" viewBox="0 0 24 24">
+          <rect x="3" y="4" width="18" height="13" rx="2" />
+          <path d="M8 21h8m-4-4v4m0-7V7m-3 3 3-3 3 3" />
+        </symbol>
+        <symbol id="i-chat" viewBox="0 0 24 24">
+          <path d="M5 4h14a2 2 0 012 2v11a2 2 0 01-2 2H8l-5 3V6a2 2 0 012-2Z" />
+          <path d="M7 9h10M7 13h7" />
+        </symbol>
+        <symbol id="i-settings" viewBox="0 0 24 24">
+          <path
+            d="m10 3-.6 2.4-2 .9L5 5.6 2.9 9l1.9 1.7v2.6L2.9 15 5 18.4l2.4-.7 2 .9L10 21h4l.6-2.4 2-.9 2.4.7 2.1-3.4-1.9-1.7v-2.6L21.1 9 19 5.6l-2.4.7-2-.9L14 3Z"
+          />
+          <circle cx="12" cy="12" r="3" />
+        </symbol>
+        <symbol id="i-close" viewBox="0 0 24 24">
+          <path d="m6 6 12 12M6 18 18 6" />
+        </symbol>
+        <symbol id="i-send" viewBox="0 0 24 24">
+          <path d="m4 4 17 8-17 8 3-8-3-8Zm3 8h14" />
+        </symbol>
+        <symbol id="i-end" viewBox="0 0 24 24">
+          <path d="M3 12c5-5 13-5 18 0l-2 4-4-2v-3H9v3l-4 2-2-4Z" />
+        </symbol>
+        <symbol id="i-spark" viewBox="0 0 24 24">
+          <path
+            d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z"
+          />
+        </symbol>
+        <symbol id="i-lock" viewBox="0 0 24 24">
+          <rect x="6" y="10" width="12" height="11" rx="2" />
+          <path d="M8 10V7a4 4 0 018 0v3" />
+        </symbol>
+      </defs>
+    </svg>
+    <header>
+      <div class="brand">
+        <div class="brand-mark">L</div>
+        <div>
+          <strong>Live Agent</strong
+          ><small>A conversation, with a little more possibility.</small>
+        </div>
+      </div>
+      <div class="privacy">
+        <svg class="icon" style="width: 14px; height: 14px">
+          <use href="#i-lock" /></svg
+        >PRIVATE SESSION
+      </div>
+    </header>
+    <main class="workspace">
+      <section
+        class="stage"
+        id="agentTile"
+        data-state="idle"
+        aria-label="Agent meeting stage"
+      >
+        <div class="stage-top">
+          <span class="pill"
+            ><span class="dot"></span
+            ><span id="connection">Connecting locally</span></span
+          ><span id="sharingBadge" class="pill" hidden>Screen sharing on</span>
+        </div>
+        <div class="agent-center">
+          <div class="eyebrow">YOUR LOCAL COMPANION</div>
+          <div class="orb-wrap">
+            <div class="orb">
+              <svg class="icon"><use href="#i-spark" /></svg>
+            </div>
+          </div>
+          <h1>LFM3 Omni</h1>
+          <div class="agent-state" id="agentState">Connecting</div>
+          <div id="status" class="status" role="status">
+            Checking your local model…
+          </div>
+          <button id="interruptReply" class="text-button" hidden>
+            Stop reply
+          </button>
+          <div class="sound-bars" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i>
+          </div>
+        </div>
+        <div id="screenTile" class="screen-tile" hidden>
+          <video id="screenPreview" autoplay playsinline muted hidden></video>
+          <div>Your shared screen · snapshots per turn</div>
+        </div>
+        <div class="stage-foot">
+          Make yourself comfortable.<br />Turn on your mic, or say hello in
+          chat.
+        </div>
+        <div id="selfTile" class="self-tile">
+          <video id="camera" autoplay playsinline muted></video>
+          <div class="self-avatar"><span>Y</span></div>
+          <div class="tile-label">
+            <span>You</span><small id="selfMic">Mic off</small>
+          </div>
+        </div>
+      </section>
+      <aside id="chatPanel" class="chat-panel" aria-label="Session chat">
+        <div class="panel-head">
+          <h2>Conversation</h2>
+          <button id="closeChat" class="icon-button" aria-label="Close chat">
+            <svg class="icon"><use href="#i-close" /></svg>
+          </button>
+        </div>
+        <p class="panel-note">
+          Messages, sources, and the steps along the way.<br />Only final
+          answers are spoken aloud.
+        </p>
+        <div class="chat-body">
+          <div id="chatEmpty" class="empty-chat">
+            <svg class="icon"><use href="#i-chat" /></svg>Your conversation
+            starts here.<br />Ask anything, by voice or text.
+          </div>
+          <details id="taskPanel" hidden open class="tool-result">
+            <summary>Task · <span id="taskStatus">working</span></summary>
+            <p id="taskGoal"></p>
+            <ol id="taskSteps"></ol>
+            <button id="pauseTask" class="text-button">Pause</button>
+            <button id="resumeTask" class="text-button" disabled>Resume</button>
+            <button id="cancelTask" class="text-button">Cancel task</button>
+          </details>
+          <div id="noteDraft" class="approval" hidden>
+            <strong>Review note · <span id="notePath"></span></strong>
+            <details>
+              <summary>Existing content</summary>
+              <pre id="noteBefore"></pre>
+            </details>
+            <textarea
+              id="noteContent"
+              rows="10"
+              aria-label="Note preview"
+              style="width: 100%"
+            ></textarea
+            ><button id="saveNote">Save note</button
+            ><button id="discardNote">Discard</button>
+          </div>
+          <div id="log" role="log" aria-live="polite"></div>
+          <div id="sources" class="sources" aria-label="Web sources"></div>
+          <div id="approval" class="approval" hidden>
+            <strong>Approve one browser action</strong
+            ><img
+              id="approvalPreview"
+              alt="Browser view for the proposed action"
+              style="width: 100%; border-radius: 6px; margin-top: 10px"
+            />
+            <pre id="proposal"></pre>
+            <button id="approve">Approve action</button
+            ><button id="reject">Reject</button>
+          </div>
+        </div>
+        <form id="form" class="compose">
+          <input
+            id="question"
+            placeholder="Send a message…"
+            aria-label="Message to the agent"
+            maxlength="1000"
+            autocomplete="off"
+          /><button id="send" class="send" aria-label="Send message" disabled>
+            <svg class="icon"><use href="#i-send" /></svg>
+          </button>
+        </form>
+        <div id="timing" class="chat-meta">
+          This conversation stays in this session.
+        </div>
+      </aside>
+    </main>
+    <footer>
+      <div class="session-label">
+        You + LFM3 Omni<small>Local intelligence. Your space.</small>
+      </div>
+      <div class="controls">
+        <button
+          id="toggleMic"
+          class="control device-off"
+          aria-label="Turn on microphone"
+          aria-pressed="false"
+          title="Turn on microphone"
+        >
+          <svg class="icon"><use href="#i-mic" /></svg></button
+        ><button
+          id="toggleCamera"
+          class="control device-off"
+          aria-label="Turn on camera"
+          aria-pressed="false"
+          title="Turn on camera"
+        >
+          <svg class="icon"><use href="#i-camera" /></svg></button
+        ><span class="divider"></span
+        ><button
+          id="toggleScreen"
+          class="control"
+          aria-label="Turn on screen sharing"
+          aria-pressed="false"
+          title="Share a screen or window"
+        >
+          <svg class="icon"><use href="#i-screen" /></svg></button
+        ><button
+          id="stop"
+          class="control end"
+          aria-label="Stop session and release devices"
+          title="Stop session and release devices"
+          disabled
+        >
+          <svg class="icon"><use href="#i-end" /></svg>
+        </button>
+      </div>
+      <div class="right-controls">
+        <button
+          id="toggleChat"
+          class="control enabled"
+          aria-label="Toggle conversation panel"
+          aria-pressed="true"
+          title="Conversation"
+        >
+          <svg class="icon"><use href="#i-chat" /></svg></button
+        ><button
+          id="openSettings"
+          class="control"
+          aria-label="Open settings"
+          title="Settings"
+        >
+          <svg class="icon"><use href="#i-settings" /></svg>
+        </button>
+      </div>
+    </footer>
+    <dialog id="settings" class="settings-dialog">
+      <div class="panel-head">
+        <h2>Session settings</h2>
+        <button
+          id="closeSettings"
+          class="icon-button"
+          aria-label="Close settings"
+        >
+          <svg class="icon"><use href="#i-close" /></svg>
+        </button>
+      </div>
+      <div class="settings-content">
+        <h3>Voice & listening</h3>
+        <label class="setting"
+          >Agent voice<select id="voice">
+            <option>female</option>
+            <option>male</option>
+          </select></label
+        ><label class="setting"
+          >Speech threshold <span id="thresholdValue">0.018</span></label
+        ><input
+          id="threshold"
+          class="full"
+          type="range"
+          min="0.005"
+          max="0.08"
+          value="0.018"
+          step="0.001"
+          aria-label="Speech threshold"
+        /><label class="setting">Microphone level</label
+        ><meter
+          id="level"
+          min="0"
+          max="0.15"
+          value="0"
+          aria-label="Microphone level"
+        ></meter
+        ><small
+          >Pause for 0.9 seconds to send a turn. Listening pauses during
+          replies. Use headphones to reduce echo.</small
+        >
+        <label class="setting"
+          >Voice interruption (use headphones)<input
+            id="bargeIn"
+            type="checkbox" /></label
+        ><small
+          >Off by default to avoid speaker echo. Sustained speech stops a spoken
+          reply; Stop reply always works.</small
+        >
+        <h3>Visual context</h3>
+        <label class="setting"
+          >Include a snapshot with each question<input
+            id="vision"
+            type="checkbox"
+            checked /></label
+        ><label class="setting"
+          >Snapshot source<select id="visualSource">
+            <option value="both">Camera + shared screen</option>
+            <option value="camera">Camera only</option>
+            <option value="screen">Screen only</option>
+          </select></label
+        ><small
+          >Camera, microphone, and screen sharing are independent. Screen
+          sharing lets the agent observe; it does not grant desktop
+          control.</small
+        >
+        <h3>Agent tools</h3>
+        <label class="setting"
+          >Web search & page reading<input
+            id="web"
+            type="checkbox"
+            checked /></label
+        ><small
+          >Search queries go to Bing. Camera and audio media go only to your
+          local model.</small
+        ><label class="setting"
+          >Supervised browser proposals<input
+            id="browserEnabled"
+            type="checkbox"
+        /></label>
+        <div class="settings-row">
+          <input
+            id="browserURL"
+            type="url"
+            value="https://example.com"
+            aria-label="Browser URL"
+          />
+        </div>
+        <div class="settings-row">
+          <button id="openBrowser" class="text-button">
+            Open dedicated browser</button
+          ><button id="closeBrowser" class="text-button">Close browser</button>
+        </div>
+        <small
+          >Uses a separate Chrome session. Every proposed browser action
+          requires your approval in chat.</small
+        ><img id="browserPreview" hidden alt="Dedicated browser latest view" />
+        <h3>Selected folder</h3>
+        <label class="setting"
+          >Allow file tools<input id="filesEnabled" type="checkbox" /></label
+        ><input
+          id="folderPath"
+          type="text"
+          placeholder="Absolute folder path"
+          aria-label="Selected folder path"
+          style="width: 100%"
+        />
+        <div class="settings-row">
+          <button id="configureFolder" class="text-button">Enable folder</button
+          ><button id="disableFolder" class="text-button">
+            Disable access
+          </button>
+        </div>
+        <small id="folderStatus">No folder enabled</small
+        ><small
+          >Text files only. Hidden files and symbolic links are excluded.
+          Markdown writes always need a preview and Save note.</small
+        >
+        <h3>Optional memory</h3>
+        <label class="setting"
+          >Persist selected memories<input
+            id="memoryEnabled"
+            type="checkbox" /></label
+        ><label class="setting">Preferences</label
+        ><textarea
+          id="memoryPreferences"
+          rows="3"
+          aria-label="Memory preferences"
+          style="width: 100%"
+        ></textarea
+        ><label class="setting">Facts (one per line)</label
+        ><textarea
+          id="memoryFacts"
+          rows="3"
+          aria-label="Saved facts"
+          style="width: 100%"
+        ></textarea
+        ><label class="setting">Saved session recaps</label
+        ><textarea
+          id="memorySummaries"
+          rows="4"
+          aria-label="Saved session recaps"
+          style="width: 100%"
+        ></textarea>
+        <div class="settings-row">
+          <button id="saveMemory" class="text-button">Save memory</button
+          ><button id="exportMemory" class="text-button">
+            Export saved memory</button
+          ><button id="deleteMemory" class="text-button">Delete memory</button>
+        </div>
+        <button id="addSummary" class="text-button">
+          Preview recent-turn recap</button
+        ><small
+          >Off by default. The model cannot save memories. Review changes before
+          Save; disabling persistence deletes the saved memory file.</small
+        >
+        <h3>Conversation</h3>
+        <button id="exportSession" class="text-button">
+          Export recent turns</button
+        ><button id="clear" class="text-button">Clear conversation</button
+        ><label class="setting">Replay latest reply</label
+        ><audio id="reply" controls></audio
+        ><small
+          >Media stays in memory. Stopping releases capture devices. Closing or
+          refreshing the page clears this session.</small
+        >
+      </div>
+    </dialog>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
